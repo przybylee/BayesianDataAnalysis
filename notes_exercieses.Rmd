@@ -1,0 +1,49 @@
+---
+title: "Bayesian Data Analysis:  Notes and Exercises"
+author: "Lee Przybylski"
+date: "1/1/2023"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    #extra_dependencies: ["amsthm", "amsmath", "enumerate"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+Below is a write-up of notes and solutions to the exercises from the third 
+edition of *Bayesian Data Analysis* by Andrew Gelman et al.  
+
+## Ch 1:  Probability and Inference
+
+### Notes
+
+Here we include some key ideas from the chapter just for reference.
+
+### Exercises
+
+1. Conditional probability:  suppose that if $\theta = 1$, then $y$ has a normal distribution with mean 1 and standard deviation $\sigma$, and if $\theta = 2$, then $y$ has a normal distribution with mean 2 and standard deviation $\sigma$.  Also suppose $\Pr(\theta = 1) = 0.5$ and $\Pr(\theta = 2) = 0.5.$
+
+    (a). For $\sigma = 2$, write the formula for the marginal probability density for $y$ and sketch it.
+    
+    Solution:  Solution to part (a)
+  
+    (b). What is $\Pr(\theta = 1|y = 1)$, again, supposing $\sigma = 2$?
+    
+    Soution:  Solution to part (b)
+  
+2. Problem 2
+
+## Ch 2: Single Parameter Models
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
