@@ -13,14 +13,18 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## Introduction
 
 Below is a write-up of notes and solutions to the exercises from the third 
-edition of *Bayesian Data Analysis* by Andrew Gelman et al.  
+edition of *Bayesian Data Analysis* by Andrew Gelman et al.  At the time these 
+were written, solutions were also available at 
+[stat.columbia.edu](http://www.stat.columbia.edu/~gelman/book/solutions3.pdf). My
+hope is that the solutions offered here can be slightly more detailed.  Also, 
+even when I consulted the existing solutions, there was still a good benefit to 
+writing things down in my own words.
 
-## Ch 1:  Probability and Inference
+# Probability and Inference
 
-### Notes
+## Notes
 
 This chapter is spent mostly on defining notation and reviewing a few 
 prerequisite ideas.  In 1.3 we see that most densities will be denoted with a 
@@ -47,27 +51,121 @@ Equation \@ref(eq:Bayes-ch1) is often expressed as
 p(\theta|y)\propto p(\theta)p(y|\theta).
 \end{equation}
 
+When performing Bayesian inference, we will typically start by specifying a 
+**prior** distribution for $\theta$ and using observed data $y$, we will compute
+a posterior distribution for $\theta$ using \@ref(eq:Bayes-ch1).  The prior 
+predictive distribution of $y$, which is often refered to as the marginal 
+distribution is found using 
 
-### Exercises
+\begin{equation}
+p(y) = \int p(\theta)p(y|\theta)d\theta.
+\end{equation}
+
+In case the distribution of $\theta$ is discrete, we exchange the integral for 
+summation.  If we have data $y$ and want to understand some future observations
+$\tilde{y}$ coming from the same process, we can use the **posterior predictive
+distribution**, which we derive as
+
+\begin{equation}
+\begin{split}
+p(\tilde{y}|y) &= \int p(\tilde{y}, \theta)d\theta\\
+&=\int p(\tilde{y}|\theta, y)p(\theta|y)d\theta\\
+&=\int p(\tilde{y}|\theta)p(\theta|y)d\theta.
+\end{split}
+\end{equation}
+
+The last equality follows from the assumption that $\tilde{y}$ is independent of 
+$y$ after conditioning on $\theta$.
+
+## Exercises
 
 1. Conditional probability:  suppose that if $\theta = 1$, then $y$ has a normal distribution with mean 1 and standard deviation $\sigma$, and if $\theta = 2$, then $y$ has a normal distribution with mean 2 and standard deviation $\sigma$.  Also suppose $\Pr(\theta = 1) = 0.5$ and $\Pr(\theta = 2) = 0.5.$
 
     (a). For $\sigma = 2$, write the formula for the marginal probability density for $y$ and sketch it.
     
-    Solution:  Solution to part (a)
-  
+    Solution:  In general, we have
+    \begin{equation}
+    p(y) = \sum_{\theta = 1}^2p(y|\theta)p(\theta) = \frac{1}{2}N(y|1,\sigma^2) + \frac{1}{2}N(y|2,\sigma^2).
+    \end{equation}
+    
+    We can substitute $\sigma = 2$ and be a bit more explicit to find
+    
+    \begin{equation}
+    p(y) = \frac{1}{4\sqrt{2\pi}}\left(e^{-(y-1)^2/8} + e^{-(y-2)^2/8}\right).
+    \end{equation}
+    
+    This is a uni-modal distribution that peaks around 1.5.  Here is a 
+    rough plot.  Note that for smaller values of $\sigma$, this would become
+    a bimodal distribution with peaks at 1 and 2.
+    
+    ```{r}
+    y <- seq(-8, 10, by = 0.05)
+    py <- dnorm(y, mean = 1, sd = 2)/2 + dnorm(y, mean = 2, sd = 2)/2
+    plot(y, py, type = "l", xlab = "y", ylab = "p(y)")
+    ```
+    
     (b). What is $\Pr(\theta = 1|y = 1)$, again, supposing $\sigma = 2$?
     
-    Soution:  Solution to part (b)
+    Solution:  We carry the computaiton out below.  Note that since all the 
+    normal densities have standard deviation 2, we get some nice cancellation.
+    
+    \begin{equation}
+    \begin{split}
+    \Pr[\theta = 1|y = 1] &= \frac{\Pr[\theta = 1]p(1|\theta = 1)}{p(1)}\\
+    &= \frac{\frac{1}{2}N(1|1,4)}{\frac{1}{2}N(1|1,4) + \frac{1}{2}N(1|2,4)}\\
+    &= \frac{e^0}{e^0 + e^{-1/8}}.
+    \end{split}
+    \end{equation}
   
-2. Problem 2
+    Thus in this case $\Pr[\theta = 1|y = 1] =$ `r 1/(1+exp(-1/8))`.
+    
+    (c).  Describe how the posterior density of $\theta$ changes in shape as
+    $\sigma$ is increased and as it is decreased.
+    
+    Solution:  For general $\sigma >0$, we still get the nice cancellation 
+    observed in the previous part so that
+    
+    \begin{equation}
+    \Pr[\theta = 1|y = 1] = \frac{1}{1 + e ^{-1/(2\sigma^2)}}
+    \end{equation}
+    
+    Thus 
+    \begin{equation}
+    \lim_{\sigma\to 0^+} \Pr[\theta = 1|y=1] = 1
+    \end{equation}
+    and
+    \begin{equation}
+    \lim_{\sigma\to \infty} \Pr[\theta = 1|y=1] = \frac{1}{2}
+    \end{equation}
+    
+    For more general $y$, we have
+    \begin{equation}
+    \begin{split}
+    \Pr[\theta = 1|y] &= \frac{e^{-(y-1)^2/2\sigma^2}}{e^{-(y-1)^2/2\sigma^2} + e ^{-(y-2)^2/2\sigma^2}}\\
+    &= \frac{1}{1 + \exp[((y-1)^2 - (y-2)^2)/2\sigma^2]/}.
+    \end{split}
+    \end{equation}
+    
+    Thus if $y > 3/2$, then the argument of the exponential is positive
+    so for small $\sigma$, $\Pr[\theta = 1|y]$ would be close to 0.  As 
+    $\sigma\to\infty$, we get $\Pr[\theta = 1|y]\to \frac{1}{2}^-$.  On the 
+    other hand, if $y <3/2$ then we get the same limits, with respect to 
+    $\sigma$ as observed when $y = 1$.  Finally, if $y = 3/2$, then 
+    $\Pr[\theta = 1|y] = 1/2$ for all $\sigma > 0$.
+    
+    \qed
+    
+2. Conditional means and variances:  show that (1.8) and (1.9) hold if $u$ is a 
+vector.
 
-## Ch 2: Single Parameter Models
+Solution:  For clarity, (1.8) refers to
 
-You can also embed plots, for example:
+\begin{equation}
+(#eq:text1-8)
+E(u) = E(E(u|v))
+\end{equation}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Single Parameter Models
+
+This is chapter 2.
