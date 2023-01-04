@@ -162,7 +162,14 @@ Solution:  For clarity, (1.8) refers to
 
 \begin{equation}
 (#eq:text1-8)
-E(u) = E(E(u|v))
+\mathbb{E}(u) = \mathbb{E}(\text{E}(u|v))
+\end{equation}
+
+On the other hand, (1.9) in multi-dimensions would mean 
+
+\begin{equation}
+(#eq:text1-9)
+\text{var}(u) = \mathbb{E}(\text{var}(u|v)) + \text{var}(\text{E}(u|v))
 \end{equation}
 
 
